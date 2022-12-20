@@ -13,7 +13,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 
 // declare const self: ServiceWorkerGlobalScope;
 
@@ -70,11 +70,11 @@ registerRoute(
   })
 );
 
-registerRoute(
-  ({ request }) =>  request.destination === 'script' ||
-                    request.destination === 'style',
-  new StaleWhileRevalidate()
-);
+// registerRoute(
+//   ({ request }) =>  request.destination === 'script' ||
+//                     request.destination === 'style',
+//   new StaleWhileRevalidate()
+// );
 
 registerRoute(
   ({ request }) => request.destination === 'image',
@@ -91,6 +91,58 @@ registerRoute(
     ]
   })
 );
+
+// Кэшируем страницы (`HTML`) с помощью стратегии `Network First` (сначала сеть)
+registerRoute(
+  // проверяем, что запрос - это переход на новую страницу
+  ({ request }) => request.mode === 'navigate',
+  new NetworkFirst({
+    // помещаем все файлы в кэш с названием 'pages'
+    cacheName: 'pages',
+    plugins: [
+      // кэшируем только результаты со статусом 200
+      new CacheableResponsePlugin({
+        statuses: [200]
+      })
+    ]
+  })
+);
+
+// Кэшируем запросы на получение `CSS`, `JS` и веб-воркеров с помощью стратегии `Stale While Revalidate` (считается устаревшим после запроса)
+registerRoute(
+  ({ request }) => request.destination === 'style' ||
+    request.destination === 'script' ||
+    request.destination === 'worker',
+  new StaleWhileRevalidate({
+    // помещаем файлы в кэш с названием 'assets'
+    cacheName: 'assets',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [200]
+      })
+    ]
+  })
+);
+
+// Кэшируем изображения с помощью стратегии `Cache First` (сначала кэш)
+registerRoute(
+  // проверяем, что цель запроса - изображение
+  ({ request }) => request.destination === 'image',
+  new CacheFirst({
+    // помещаем файлы в кэш с названием 'images'
+    cacheName: 'images',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [200]
+      }),
+      // кэшируем до 50 изображений в течение 30 дней
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 60 * 60 * 24 * 30
+      })
+    ]
+  })
+)
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
