@@ -5,18 +5,18 @@ import './App.css';
 function App() {
   const [datas, setDatas] = useState([]);
 
-  useEffect(() => {
-    async function isData() {
-      const respons = await fetch('https://jsonplaceholder.typicode.com/users');
+  // useEffect(() => {
+  //   async function isData() {
+  //     const respons = await fetch('https://jsonplaceholder.typicode.com/users');
   
-      const data = await respons.json();
+  //     const data = await respons.json();
 
-      console.log(data);
-      setDatas(data);
-    }
+  //     console.log(data);
+  //     setDatas(data);
+  //   }
 
-    isData();
-  }, []);
+  //   isData();
+  // }, []);
 
   // indexedDB.databases();
 
@@ -26,13 +26,13 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
       </header>
 
-      <main>
+      {/* <main>
         {datas.map((item) => (
           <div key={item.id}>
             {item.name}
           </div>
         ))}
-      </main>
+      </main> */}
     </div>
   );
 }
