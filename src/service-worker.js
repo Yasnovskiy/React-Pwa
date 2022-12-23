@@ -54,21 +54,21 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
-// An example runtime caching route for requests that aren't handled by the
-// precache, in this case same-origin .png requests like those from in public/
-registerRoute(
-  // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'),
-  // Customize this strategy as needed, e.g., by changing to CacheFirst.
-  new StaleWhileRevalidate({
-    cacheName: 'images',
-    plugins: [
-      // Ensure that once this runtime cache reaches a maximum size the
-      // least-recently used images are removed.
-      new ExpirationPlugin({ maxEntries: 50 }),
-    ],
-  })
-);
+// // An example runtime caching route for requests that aren't handled by the
+// // precache, in this case same-origin .png requests like those from in public/
+// registerRoute(
+//   // Add in any other file extensions or routing criteria as needed.
+//   ({ url }) => url.origin === self.location.origin && url.pathname.endsWith('.png'),
+//   // Customize this strategy as needed, e.g., by changing to CacheFirst.
+//   new StaleWhileRevalidate({
+//     cacheName: 'images',
+//     plugins: [
+//       // Ensure that once this runtime cache reaches a maximum size the
+//       // least-recently used images are removed.
+//       new ExpirationPlugin({ maxEntries: 50 }),
+//     ],
+//   })
+// );
 
 // registerRoute(
 //   ({ request }) =>  request.destination === 'script' ||
@@ -76,21 +76,21 @@ registerRoute(
 //   new StaleWhileRevalidate()
 // );
 
-registerRoute(
-  ({ request }) => request.destination === 'image',
-  new CacheFirst({
-    cacheName: 'images',
-    plugins: [
-      new CacheableResponsePlugin({
-        statuses: [0, 200]
-      }),
-      new ExpirationPlugin({
-        maxEntries: 60,
-        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 дней
-      })
-    ]
-  })
-);
+// registerRoute(
+//   ({ request }) => request.destination === 'image',
+//   new CacheFirst({
+//     cacheName: 'images',
+//     plugins: [
+//       new CacheableResponsePlugin({
+//         statuses: [0, 200]
+//       }),
+//       new ExpirationPlugin({
+//         maxEntries: 60,
+//         maxAgeSeconds: 30 * 24 * 60 * 60 // 30 дней
+//       })
+//     ]
+//   })
+// );
 
 // Кэшируем страницы (`HTML`) с помощью стратегии `Network First` (сначала сеть)
 registerRoute(
@@ -112,6 +112,7 @@ registerRoute(
 registerRoute(
   ({ request }) => request.destination === 'style' ||
     request.destination === 'script' ||
+    request.destination === 'manifest.json' ||
     request.destination === 'worker',
   new StaleWhileRevalidate({
     // помещаем файлы в кэш с названием 'assets'
