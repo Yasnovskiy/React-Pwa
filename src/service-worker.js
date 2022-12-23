@@ -112,7 +112,6 @@ registerRoute(
 registerRoute(
   ({ request }) => request.destination === 'style' ||
     request.destination === 'script' ||
-    request.destination === 'manifest.json' ||
     request.destination === 'worker',
   new StaleWhileRevalidate({
     // помещаем файлы в кэш с названием 'assets'
